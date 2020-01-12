@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+    <title th:text="#{string.reg.title.registration}"></title>
+</head>
+<body>
+<div class="container">
+    <div class="panel-heading">
+        <h3 class="panel-title" th:text="#{string.reg.registration.form}"></h3>
+    </div>
+    <div class="panel-body">
+
+        <form th:action="@{/registration}" method="post" th:object="${user}">
+            <div class="field">
+                <label th:text="#{string.reg.login}">
+                </label>
+                <input type="text" name="username" class="input"
+                       required pattern="^[a-zA-Z0-9]+([_ -]?[a-zA-Z0-9])*$"
+                       th:placeholder="#{string.reg.username.placeholder}"/>
+            </div>
+            <div class="field">
+                <label th:text="#{string.reg.password}">
+                </label>
+                <input type="password" name="password" class="input" required pattern="^.{8,50}$"
+                       th:placeholder="#{string.reg.password.placeholder}"/>
+            </div>
+            <div class="field">
+                <label th:text="#{string.reg.name}">
+                </label>
+                <input type="text" name="firstName" class="input"
+                       required pattern="(^[A-Z][a-z]{1,40}$)|(^[А-ЯЇІЄ][а-яіїє']{1,40}$)"
+                       th:placeholder="#{string.reg.name.placeholder}"/>
+            </div>
+            <div class="field">
+                <label th:text="#{string.reg.surname}">
+                </label>
+                <input type="text" name="lastName" class="input"
+                       required pattern="(^[A-Z][a-z]{1,40}$)|(^[А-ЯЇІЄ][а-яіїє']{1,40}$)"
+                       th:placeholder="#{string.reg.surname.placeholder}"
+                />
+            </div>
+            <div>
+                <span class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+            </div>
+            <div class="field"><input type="submit" th:value="#{string.reg.button.registration}" class="button"/></div>
+            <div class="field">
+            </div>
+        </form>
+
+    </div>
+    <div class="locale">
+        <a href="?lang=en">EN</a>
+        |
+        <a href="?lang=ua">UA</a>
+    </div>
+
+</div>
+</body>
+</html>
