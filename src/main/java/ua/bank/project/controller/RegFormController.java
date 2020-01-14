@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ua.bank.project.dto.UserDTO;
-import ua.bank.project.entity.UserData;
+import ua.bank.project.entity.User;
 import ua.bank.project.exception.ExistingUserRegistrationException;
 import ua.bank.project.service.RegFormService;
 
@@ -35,22 +35,22 @@ public class RegFormController {
     }
 
     @PostMapping
-    public String registrer(@ModelAttribute( "user" ) @Valid UserDTO userDto,
+    public String registrer(@ModelAttribute("user") @Valid UserDTO userDto,
                             BindingResult result) {
 
-        UserData registered = null;
+        User registered = null;
         if (!result.hasErrors()) {
             registered = createUserAccount(userDto, result);
         }
         if (registered == null) {
             result.rejectValue("username", "string.reg.login.exists");
             return "reg_form";
-        } else return "login_form";
+        } else return "redirect:login";
     }
 
 
-    private UserData createUserAccount(@Valid UserDTO userDto, BindingResult result) {
-        UserData registered = null;
+    private User createUserAccount(@Valid UserDTO userDto, BindingResult result) {
+        User registered = null;
         try {
             registered = regFormService.saveNewUser(userDto);
         } catch (ExistingUserRegistrationException e) {

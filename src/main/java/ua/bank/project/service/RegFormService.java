@@ -4,37 +4,51 @@ package ua.bank.project.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ua.bank.project.dto.UserDTO;
 import ua.bank.project.entity.Role;
-import ua.bank.project.entity.UserData;
+import ua.bank.project.entity.User;
+import ua.bank.project.entity.UserWallet;
 import ua.bank.project.exception.ExistingUserRegistrationException;
-import ua.bank.project.repository.UserDataRepository;
+import ua.bank.project.repository.UserRepository;
+import ua.bank.project.repository.UserWalletRepository;
 
 
 @Service
 public class RegFormService {
 
-    private final UserDataRepository userDataRepository;
+    private final UserRepository userRepository;
+    private final UserWalletRepository userWalletRepository;
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public RegFormService(UserDataRepository userDataRepository) {
-        this.userDataRepository = userDataRepository;
+    public RegFormService(UserRepository userRepository, UserWalletRepository userWalletRepository) {
+        this.userRepository = userRepository;
+        this.userWalletRepository = userWalletRepository;
     }
 
-    public UserData saveNewUser(UserDTO dto) throws ExistingUserRegistrationException {
-        UserData userData = UserData.builder()
+    public User saveNewUser(UserDTO dto) throws ExistingUserRegistrationException {
+        User user = User.builder()
                 .username(dto.getUsername())
                 .password(dto.getPassword())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
                 .role(Role.USER)
                 .build();
+        user.setPassword(bCryptPasswordEncoder.encode(dto.getPassword()));
         try{
-            userDataRepository.save(userData);
+            userRepository.save(user);
+            UserWallet userWallet = UserWallet.builder()
+                    .debitWallet(1000L)
+                    .creditWallet(0L)
+                    .user(user)
+                    .build();
+            userWalletRepository.save(userWallet);
         }catch (DataIntegrityViolationException e){
             throw new ExistingUserRegistrationException("User with login is already exists: ", dto.getUsername());
         }
-        return userData;
+        return user;
     }
 }
