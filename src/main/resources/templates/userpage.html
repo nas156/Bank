@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+    <title th:text="#{string.user.panel}"></title>
+</head>
+<body>
+<div class="container">
+    <h3 th:inline="text">[[#{string.user.hello}]] [[${#httpServletRequest.remoteUser}]]!</h3>
+    <span class="header" th:text="#{string.user.wallets}">
+    </span>
+    <table class="table">
+        <tr>
+            <th th:text="#{string.user.debitwallet}"></th>
+            <th th:text="#{string.user.creditwallet}"></th>
+        </tr>
+        <tr th:object="${walletDTO}">
+            <td th:text="${walletDTO.debitWallet}"></td>
+            <td th:text="${walletDTO.creditWallet}"></td>
+        </tr>
+    </table>
+    <form th:action="@{/user/request}" method="post">
+        <input type="number" name="amount"  max="100000" min="1000"
+               th:placeholder="#{string.user.credit.request.amount}"/>
+        <input class="button" type="submit" th:value="#{string.user.open.creditwallet}"/>
+    </form>
+    <span class="error" th:if="${#httpServletRequest.getParameter('amount') == 'notenough'}"
+          th:text="#{string.user.notenough}"></span>
+    <form th:action="@{/user/paybill}" method="post">
+        <input type="text"  class="input" name="code"
+               required pattern="(^[0-9]{1,40}$)"
+               th:placeholder="#{string.user.code.bill}"/>
+        <input type="number" class="input" name="amount"
+               th:placeholder="#{string.user.bill.amount}"/>
+        <input class="button" type="submit" th:value="#{string.user.pay.bill}"/>
+    </form>
+
+
+    <form th:action="@{/logout}" method="post">
+        <input class="button" type="submit" th:value="#{string.common.logout}"/>
+    </form>
+    <div>
+<span class="locale" style="float: left">
+    <a href="?lang=en">EN</a>
+    |
+    <a href="?lang=ua">UA</a>
+</span>
+    </div>
+</div>
+</body>
+</html>

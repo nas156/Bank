@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 import ua.bank.project.entity.Role;
-import ua.bank.project.entity.UserAdapter;
 import ua.bank.project.entity.User;
 import ua.bank.project.repository.UserRepository;
 

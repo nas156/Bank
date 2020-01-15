@@ -12,7 +12,6 @@ import ua.bank.project.entity.User;
 import ua.bank.project.exception.ExistingUserRegistrationException;
 import ua.bank.project.service.RegFormService;
 
-
 import javax.validation.Valid;
 
 @Slf4j
@@ -40,16 +39,15 @@ public class RegFormController {
 
         User registered = null;
         if (!result.hasErrors()) {
-            registered = createUserAccount(userDto, result);
+            registered = createUserAccount(userDto);
         }
         if (registered == null) {
             result.rejectValue("username", "string.reg.login.exists");
             return "reg_form";
-        } else return "redirect:login";
+        } else return "redirect:/login";
     }
 
-
-    private User createUserAccount(@Valid UserDTO userDto, BindingResult result) {
+    private User createUserAccount(@Valid UserDTO userDto) {
         User registered = null;
         try {
             registered = regFormService.saveNewUser(userDto);

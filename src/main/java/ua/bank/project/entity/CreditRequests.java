@@ -3,26 +3,26 @@ package ua.bank.project.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
+@Builder
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@AllArgsConstructor
 @Entity
-@ToString
-public class UserWallet {
+public class CreditRequests {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    private Integer debitWallet;
-
-    private Integer currentCreditWallet;
-
-    private Integer beginningCreditWallet;
+    private Integer requestAmount;
 
     @OneToOne
     private User user;
 
+    @OneToOne
+    UserWallet userWallet;
+
+    private LocalDateTime requestDate;
 }

@@ -20,13 +20,14 @@ public class RegFormService {
 
     private final UserRepository userRepository;
     private final UserWalletRepository userWalletRepository;
-    @Autowired
+    final
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public RegFormService(UserRepository userRepository, UserWalletRepository userWalletRepository) {
+    public RegFormService(UserRepository userRepository, UserWalletRepository userWalletRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.userWalletRepository = userWalletRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     public User saveNewUser(UserDTO dto) throws ExistingUserRegistrationException {
@@ -41,8 +42,8 @@ public class RegFormService {
         try{
             userRepository.save(user);
             UserWallet userWallet = UserWallet.builder()
-                    .debitWallet(1000L)
-                    .creditWallet(0L)
+                    .debitWallet(1000)
+                    .currentCreditWallet(0)
                     .user(user)
                     .build();
             userWalletRepository.save(userWallet);
