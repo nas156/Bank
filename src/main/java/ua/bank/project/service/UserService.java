@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
-import ua.bank.project.entity.Role;
+import ua.bank.project.dto.UserInfoDTO;
+import ua.bank.project.entity.UserInfo;
+import ua.bank.project.entity.enums.Role;
 import ua.bank.project.entity.User;
 import ua.bank.project.repository.UserRepository;
 
@@ -29,20 +31,21 @@ public class UserService implements UserDetailsService {
         } catch (Exception ex) {
             log.info("{Почтовый адрес уже существует}");
         }
-
     }
 
     public Role getUserRole(String username){
         return userRepository.findByUsername(username).get().getRole();
     }
 
+
+
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         Optional<User> userOpt = Optional.ofNullable(userRepository
                 .findByUsername(s)
                 .orElseThrow(() -> new UsernameNotFoundException(s + " not found")));
-        User user = userOpt.get();
-        return user;
+        return userOpt.get();
     }
+
 }
 

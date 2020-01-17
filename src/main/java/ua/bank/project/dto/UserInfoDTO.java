@@ -4,16 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ua.bank.project.entity.CreditRequests;
+import ua.bank.project.entity.UserInfo;
+import ua.bank.project.entity.enums.TransactionType;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class CreditRequestDTO {
-    List<CreditRequests> requests;
+public class UserInfoDTO {
+    List<UserInfo> userInfos;
 }

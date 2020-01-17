@@ -1,9 +1,12 @@
 package ua.bank.project.entity;
 
 import lombok.*;
+import ua.bank.project.entity.enums.CreditRequestStatus;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Builder
 @Getter
@@ -24,5 +27,10 @@ public class CreditRequests {
     @OneToOne
     UserWallet userWallet;
 
-    private LocalDateTime requestDate;
+    @Enumerated(EnumType.STRING)
+    private CreditRequestStatus creditRequestStatus;
+
+    private LocalDate requestDate;
+
+    private LocalTime requestTime;
 }

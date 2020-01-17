@@ -11,6 +11,7 @@ public class WalletService {
 
     final UserWalletRepository userWalletRepository;
 
+    @Autowired
     public WalletService(UserWalletRepository userWalletRepository) {
         this.userWalletRepository = userWalletRepository;
     }

@@ -1,51 +1,69 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<link href="../static/css/userpanel.css" th:href="@{/css/userpanel.css}" rel="stylesheet">
 
 <head>
     <title th:text="#{string.user.panel}"></title>
-</head>
-<body>
-<div class="container">
-    <h3 th:inline="text">[[#{string.user.hello}]] [[${#httpServletRequest.remoteUser}]]!</h3>
-    <span class="header" th:text="#{string.user.wallets}">
-    </span>
-    <table class="table">
-        <tr>
-            <th th:text="#{string.user.debitwallet}"></th>
-            <th th:text="#{string.user.creditwallet}"></th>
-        </tr>
-        <tr th:object="${walletDTO}">
-            <td th:text="${walletDTO.debitWallet}"></td>
-            <td th:text="${walletDTO.creditWallet}"></td>
-        </tr>
-    </table>
-    <form th:action="@{/user/request}" method="post">
-        <input type="number" name="amount"  max="100000" min="1000"
-               th:placeholder="#{string.user.credit.request.amount}"/>
-        <input class="button" type="submit" th:value="#{string.user.open.creditwallet}"/>
-    </form>
-    <span class="error" th:if="${#httpServletRequest.getParameter('amount') == 'notenough'}"
-          th:text="#{string.user.notenough}"></span>
-    <form th:action="@{/user/paybill}" method="post">
-        <input type="text"  class="input" name="code"
-               required pattern="(^[0-9]{1,40}$)"
-               th:placeholder="#{string.user.code.bill}"/>
-        <input type="number" class="input" name="amount"
-               th:placeholder="#{string.user.bill.amount}"/>
-        <input class="button" type="submit" th:value="#{string.user.pay.bill}"/>
-    </form>
-
-
-    <form th:action="@{/logout}" method="post">
+    <form th:action="@{/logout}" method="post" style="float: right">
         <input class="button" type="submit" th:value="#{string.common.logout}"/>
     </form>
+    <span class="error"  style="color: #b71824"  th:if="${#httpServletRequest.getParameter('user') == 'notfound'}"
+          th:text="#{string.user.notfound}"></span>
+    <span class="text"  style="color: chartreuse" th:if="${#httpServletRequest.getParameter('sended') == 'true'}"
+          th:text="#{string.user.sended}"></span>
+    <span class="error"  style="color: #b71824" th:if="${#httpServletRequest.getParameter('amount') == 'notenough'}"
+          th:text="#{string.user.notenough}"></span>
+    <span class="text" style="color: chartreuse" th:if="${#httpServletRequest.getParameter('payed') == 'true'}"
+          th:text="#{string.user.payed}"></span>
     <div>
-<span class="locale" style="float: left">
+<span class="locale" style="float: right">
     <a href="?lang=en">EN</a>
     |
     <a href="?lang=ua">UA</a>
 </span>
     </div>
+</head>
+<body>
+<div class="container">
+    <h3 th:inline="text">[[#{string.user.hello}]] [[${#httpServletRequest.remoteUser}]]!</h3>
+    <span class="header" th:text="#{string.user.wallets}" style="font-size: large">
+    </span>
+    <table class="table">
+        <tr>
+            <th style="font-size: medium" th:text="#{string.user.debitwallet}"></th>
+            <th style="font-size: medium" th:text="#{string.user.creditwallet}"></th>
+        </tr>
+        <tr th:object="${walletDTO}">
+            <td  style="font-size: medium" th:text="${walletDTO.debitWallet}"></td>
+            <td style="font-size: medium" th:text="${walletDTO.creditWallet}"></td>
+        </tr>
+    </table>
+    <form th:action="@{/user/request}" method="post">
+        <input type="text" name="amount"  max="100000" min="1000"
+               th:placeholder="#{string.user.credit.request.amount}"/><br>
+        <input class="button" type="submit" th:value="#{string.user.open.creditwallet}"/>
+    </form>
+    <form th:action="@{/user/paybill}" method="post">
+        <input type="text"  class="input" name="code"
+               required pattern="(^[0-9]{1,40}$)"
+               th:placeholder="#{string.user.code.bill}"/>
+        <input type="text" class="input" name="amount"
+               th:placeholder="#{string.user.bill.amount}"/><br>
+        <input class="button" type="submit" th:value="#{string.user.pay.bill}"/>
+    </form>
+    <form th:action="@{/user/sendmoney}" method="post">
+        <input type="text"  class="input" name="recipientUsername"
+               required pattern="(^[a-zA-Z0-9]+([_ -]?[a-zA-Z0-9])*$)"
+               th:placeholder="#{string.user.recipient}"/>
+        <input type="text" class="input" name="amount"
+               th:placeholder="#{string.user.bill.amount}"/><br>
+        <input class="button" type="submit" th:value="#{string.user.send}"/>
+    </form>
+    <form th:action="@{/user/transaction-info}" method="get">
+        <input class="button" type="submit" th:value="#{string.user.see.info}"/>
+    </form>
+
+
 </div>
 </body>
 </html>

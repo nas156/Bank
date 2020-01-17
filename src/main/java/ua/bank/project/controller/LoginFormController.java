@@ -1,12 +1,12 @@
 package ua.bank.project.controller;
 
-import org.springframework.security.core.Authentication;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ua.bank.project.entity.Role;
+import ua.bank.project.entity.enums.Role;
 import ua.bank.project.service.UserService;
 
 import java.security.Principal;
@@ -16,6 +16,7 @@ public class LoginFormController {
 
     private final UserService userService;
 
+    @Autowired
     public LoginFormController(UserService userService) {
         this.userService = userService;
     }

@@ -7,7 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ua.bank.project.dto.UserDTO;
-import ua.bank.project.entity.Role;
+import ua.bank.project.entity.enums.Role;
 import ua.bank.project.entity.User;
 import ua.bank.project.entity.UserWallet;
 import ua.bank.project.exception.ExistingUserRegistrationException;
@@ -20,8 +20,7 @@ public class RegFormService {
 
     private final UserRepository userRepository;
     private final UserWalletRepository userWalletRepository;
-    final
-    BCryptPasswordEncoder bCryptPasswordEncoder;
+    final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     public RegFormService(UserRepository userRepository, UserWalletRepository userWalletRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
@@ -39,8 +38,10 @@ public class RegFormService {
                 .role(Role.USER)
                 .build();
         user.setPassword(bCryptPasswordEncoder.encode(dto.getPassword()));
+
         try{
             userRepository.save(user);
+
             UserWallet userWallet = UserWallet.builder()
                     .debitWallet(1000)
                     .currentCreditWallet(0)

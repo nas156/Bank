@@ -8,7 +8,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserWalletRepository extends JpaRepository<UserWallet, Long> {
-    UserWallet findUserWalletByUser_Username(String username);
-
     Optional<UserWallet> findByUser_Username(String username);
 }

@@ -1,10 +1,12 @@
 package ua.bank.project.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.bank.project.dto.WalletDTO;
+import ua.bank.project.exception.NoExistingUserException;
 import ua.bank.project.exception.NotEnoughMoneyToPayException;
 import ua.bank.project.service.CreditRequestService;
 import ua.bank.project.service.PayService;
@@ -20,6 +22,7 @@ public class UserController {
     final CreditRequestService creditRequestService;
     final PayService payService;
 
+    @Autowired
     public UserController(WalletService walletService, CreditRequestService creditRequestService, PayService payService) {
         this.walletService = walletService;
         this.creditRequestService = creditRequestService;
@@ -48,7 +51,20 @@ public class UserController {
         catch (NotEnoughMoneyToPayException e){
             return "redirect:/user?amount=notenough";
         }
-        return "redirect:/user";
+        return "redirect:/user?payed=true";
+    }
+
+    @RequestMapping(value = "/sendmoney")
+    public String sendMoney(@RequestParam String recipientUsername, @RequestParam int amount, Principal principal){
+        try {
+            payService.sendMoneyToUser(recipientUsername, principal.getName(), amount);
+        } catch (NotEnoughMoneyToPayException e) {
+            return "redirect:/user?amount=notenough";
+        } catch (NoExistingUserException e) {
+            return "redirect:/user?user=notfound";
+        }
+        return "redirect:/user?sended=true";
+
     }
 
 }

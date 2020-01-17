@@ -3,6 +3,7 @@ package ua.bank.project.entity;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ua.bank.project.entity.enums.Role;
 
 import javax.persistence.*;
 import java.util.Collection;

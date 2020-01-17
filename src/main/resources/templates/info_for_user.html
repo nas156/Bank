@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<link href="../static/css/userpanel.css" th:href="@{/css/userpanel.css}" rel="stylesheet">
+
+<head>
+    <title th:text="#{string.user.info}"></title>
+    <div>
+<span class="locale" style="float: right">
+    <a href="?lang=en">EN</a>
+    |
+    <a href="?lang=ua">UA</a>
+</span>
+    </div>
+</head>
+<body>
+<div class="container">
+<table class="table">
+    <tr>
+        <th th:text="#{string.user.type}"></th>
+        <th th:text="#{string.user.recipient1}"></th>
+        <th th:text="#{string.user.amount}"></th>
+        <th th:text="#{string.user.date}"></th>
+        <th th:text="#{string.user.time}"></th>
+    </tr>
+    <tr th:each="userInfo : ${userInfoDTO.userInfos}">
+        <td th:text="${userInfo.type.name()}"></td>
+        <td th:text="${userInfo.recipient}"></td>
+        <td th:text="${userInfo.sentValue}"></td>
+        <td th:text="${userInfo.transactionDate}"></td>
+        <td th:text="${userInfo.transactionTime}"></td>
+    </tr>
+</table>
+</div>
+<form th:action="@{/user}" method="get">
+    <input class="button" type="submit" th:value="#{string.user.mainpage}"/>
+</form>
+</body>
+</html>

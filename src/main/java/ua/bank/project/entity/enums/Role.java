@@ -1,4 +1,4 @@
-package ua.bank.project.entity;
+package ua.bank.project.entity.enums;
 
 import org.springframework.security.core.GrantedAuthority;
 
