@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.bank.project.dto.CreditRequestDTO;
+import ua.bank.project.exception.NoExistingRequestException;
 import ua.bank.project.exception.NoExistingUserException;
 import ua.bank.project.service.AdminService;
 
@@ -30,7 +31,7 @@ public class AdminController {
     public String confirmRequest(@RequestParam Long id){
         try{
             adminService.confirmCreditRequest(id);
-        }catch (NoExistingUserException e){
+        }catch (NoExistingRequestException e){
             adminService.deleteRequest(id);
         }
         return "redirect:/admin";
@@ -40,7 +41,7 @@ public class AdminController {
     public String rejectRequest(@RequestParam Long id){
         try {
             adminService.rejectCreditRequest(id);
-        } catch (NoExistingUserException e) {
+        } catch (NoExistingRequestException e) {
             adminService.deleteRequest(id);
         }
         return "redirect:/admin";

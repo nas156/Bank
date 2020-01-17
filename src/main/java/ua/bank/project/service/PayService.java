@@ -2,6 +2,7 @@ package ua.bank.project.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ua.bank.project.entity.User;
 import ua.bank.project.entity.UserInfo;
 import ua.bank.project.entity.UserWallet;
 import ua.bank.project.entity.enums.TransactionType;
@@ -51,6 +52,7 @@ public class PayService {
 
     }
 
+    //Problem
     public void sendMoneyToUser(String recipient, String sender, int amount)throws NotEnoughMoneyToPayException, NoExistingUserException {
         if (recipient.equals(sender)) return;
         UserWallet recipientWallet = userWalletRepository.findByUser_Username(recipient).orElseThrow(NoExistingUserException::new);
@@ -71,6 +73,17 @@ public class PayService {
             userWalletRepository.save(senderWallet);
             userInfoRepository.save(userInfo);
         }else throw new NotEnoughMoneyToPayException("not enough money");
+    }
+
+    public void closeCredit(String username) throws NotEnoughMoneyToPayException, NoExistingUserException{
+        UserWallet userWallet = userWalletRepository.findByUser_Username(username).orElseThrow(NoExistingUserException::new);
+        int debit = userWallet.getDebitWallet();
+        int credit = userWallet.getCurrentCreditWallet();
+        if(isEnoughMoney(credit, debit)){
+            userWallet.setDebitWallet(debit-credit);
+            userWallet.setCurrentCreditWallet(0);
+            userWalletRepository.save(userWallet);
+        }else throw new NotEnoughMoneyToPayException();
     }
 
     private boolean isEnoughMoney(int amount, int current){

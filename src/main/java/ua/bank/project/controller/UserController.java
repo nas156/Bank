@@ -67,4 +67,16 @@ public class UserController {
 
     }
 
+    @RequestMapping(value = "/close-credit")
+    public String closeCredit(Principal principal){
+        try {
+            payService.closeCredit(principal.getName());
+        } catch (NotEnoughMoneyToPayException e) {
+            return "redirect:/user?amount=notenough";
+        } catch (NoExistingUserException e) {
+            return "redirect:/user?user=notfound";
+        }
+        return "redirect:/user";
+    }
+
 }

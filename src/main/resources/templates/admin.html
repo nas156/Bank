@@ -3,6 +3,16 @@
 <link href="../css/userpanel.css" th:href="@{/css/userpanel.css}" rel="stylesheet">
 <head>
     <title th:text="#{string.admin}"></title>
+    <form th:action="@{/logout}" method="post" style="float: right">
+        <input class="button" type="submit" th:value="#{string.common.logout}"/>
+    </form>
+    <div style="float: right">
+<span class="locale">
+    <a href="?lang=en">EN</a>
+    |
+    <a href="?lang=ua">UA</a>
+</span>
+    </div>
 </head>
 <body>
 <div class="container">
@@ -26,12 +36,14 @@
             <td th:text="${item.requestAmount}"></td>
             <td th:text="${item.requestDate}"></td>
             <td th:text="${item.requestTime}"></td>
-            <td th:text="${item.creditRequestStatus}"></td>
+            <td th:if="${item.creditRequestStatus.name()}=='CONFIRMED'" th:text="#{type.confirmed}"></td>
+            <td th:if="${item.creditRequestStatus.name()}=='REJECTED'" th:text="#{type.rejected}"></td>
+            <td th:if="${item.creditRequestStatus.name()}=='PROCESSING'" th:text="#{type.procesing}"></td>
             <td  th:if="${item.creditRequestStatus.name()}=='PROCESSING'">
                 <form th:action="@{/admin/confirmation}" method="post">
                     <input type="hidden" name="id" th:value="${item.id}">
                     <input type="submit" class="button"
-                           style="color: chartreuse"
+                           style="color: green"
                            th:value="#{string.admin.confirm}">
                 </form>
             </td>
@@ -39,20 +51,13 @@
                 <form th:action="@{/admin/rejection}" method="post">
                     <input type="hidden" name="id" th:value="${item.id}">
                     <input type="submit" class="button"
-                           style="color: chartreuse"
+                           style="color: red"
                            th:value="#{string.admin.reject}">
                 </form>
             </td>
         </tr>
     </table>
 
-    <div style="float: left">
-<span class="locale">
-    <a href="?lang=en">EN</a>
-    |
-    <a href="?lang=ua">UA</a>
-</span>
-    </div>
 </div>
 </body>
 </html>
