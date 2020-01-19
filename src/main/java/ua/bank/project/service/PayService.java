@@ -6,14 +6,15 @@ import ua.bank.project.entity.User;
 import ua.bank.project.entity.UserInfo;
 import ua.bank.project.entity.UserWallet;
 import ua.bank.project.entity.enums.TransactionType;
+import ua.bank.project.exception.BankTransactionException;
 import ua.bank.project.exception.NoExistingUserException;
 import ua.bank.project.exception.NotEnoughMoneyToPayException;
 import ua.bank.project.repository.UserInfoRepository;
 import ua.bank.project.repository.UserRepository;
 import ua.bank.project.repository.UserWalletRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Service
@@ -32,62 +33,67 @@ public class PayService {
         this.userRepository = userRepository;
     }
 
-    public void payBill(String billCode, int amount, String username) throws NotEnoughMoneyToPayException {
-        UserWallet userWallet = userWalletRepository.findByUser_Username(username).get();
-        int current = userWallet.getDebitWallet();
-        if (isEnoughMoney(amount, current)){
-            userWallet.setDebitWallet(current-amount);
-            userWalletRepository.save(userWallet);
-            UserInfo userInfo = UserInfo.builder()
-                    .type(TransactionType.BILL_PAYMENT)
-                    .sentValue(amount)
-                    .user(userRepository.findByUsername(username).get())
-                    .transactionTime(LocalTime.now())
-                    .transactionDate(LocalDate.now())
-                    .recipient(billCode)
-                    .build();
-            userInfoRepository.save(userInfo);
-        }else throw new NotEnoughMoneyToPayException("not enough money");
-
-
+    private UserWallet findByUsername(String username) throws NoExistingUserException {
+        return userWalletRepository.findByUser_Username(username).orElseThrow(NoExistingUserException::new);
     }
 
-    //Problem
+
+    public void payBill(String billCode, int amount, String username) throws NotEnoughMoneyToPayException, NoExistingUserException{
+        addAmount(username, -amount);
+    }
+
+
+    @Transactional
     public void sendMoneyToUser(String recipient, String sender, int amount)throws NotEnoughMoneyToPayException, NoExistingUserException {
-        if (recipient.equals(sender)) return;
-        UserWallet recipientWallet = userWalletRepository.findByUser_Username(recipient).orElseThrow(NoExistingUserException::new);
-        UserWallet senderWallet = userWalletRepository.findByUser_Username(sender).get();
-        int currentSender = senderWallet.getDebitWallet();
-        if (isEnoughMoney(amount, currentSender)){
-            senderWallet.setDebitWallet(currentSender-amount);
-            recipientWallet.setDebitWallet(recipientWallet.getDebitWallet()+amount);
-            UserInfo userInfo = UserInfo.builder()
-                    .type(TransactionType.USER_SENDING)
-                    .sentValue(amount)
-                    .user(userRepository.findByUsername(sender).get())
-                    .transactionTime(LocalTime.now())
-                    .transactionDate(LocalDate.now())
-                    .recipient(recipient)
-                    .build();
-            userWalletRepository.save(senderWallet);
-            userWalletRepository.save(senderWallet);
-            userInfoRepository.save(userInfo);
-        }else throw new NotEnoughMoneyToPayException("not enough money");
+        addAmount(sender, -amount);
+        addAmount(recipient, amount);
     }
 
     public void closeCredit(String username) throws NotEnoughMoneyToPayException, NoExistingUserException{
-        UserWallet userWallet = userWalletRepository.findByUser_Username(username).orElseThrow(NoExistingUserException::new);
-        int debit = userWallet.getDebitWallet();
-        int credit = userWallet.getCurrentCreditWallet();
-        if(isEnoughMoney(credit, debit)){
-            userWallet.setDebitWallet(debit-credit);
-            userWallet.setCurrentCreditWallet(0);
-            userWalletRepository.save(userWallet);
-        }else throw new NotEnoughMoneyToPayException();
+        addAmount(username, -userWalletRepository.findByUser_Username(username).get().getCurrentCreditWallet());
+        closeCreditWallet(username);
     }
 
-    private boolean isEnoughMoney(int amount, int current){
-        return amount <= current;
+    private void addAmount(String username, int amount) throws NoExistingUserException, NotEnoughMoneyToPayException {
+        UserWallet userWallet = this.findByUsername(username);
+        int newBalance = userWallet.getDebitWallet() + amount;
+        if (userWallet.getDebitWallet() + amount < 0) {
+            throw new NotEnoughMoneyToPayException(
+                    "The money in the account '" + username + "' is not enough (" + userWallet.getDebitWallet() + ")");
+        }
+        userWallet.setDebitWallet(newBalance);
+        userWalletRepository.save(userWallet);
+    }
+
+    public void createUserInfo(String recipient, String sender, int amount, TransactionType type){
+        UserInfo userInfo = UserInfo.builder()
+                .type(type)
+                .sentValue(amount)
+                .user(userRepository.findByUsername(sender).get())
+                .transactionTime(LocalTime.now())
+                .transactionDate(LocalDate.now())
+                .recipient(recipient)
+                .build();
+        userInfoRepository.save(userInfo);
+    }
+
+    public void createCreditInfo(String username, TransactionType type, int amount){
+        if (type.equals(TransactionType.CREDIT_CLOSING)) amount =
+                userWalletRepository.findByUser_Username(username).get().getCurrentCreditWallet();
+        UserInfo userInfo = UserInfo.builder()
+                .type(type)
+                .sentValue(amount)
+                .recipient(null)
+                .user(userRepository.findByUsername(username).get())
+                .transactionTime(LocalTime.now())
+                .transactionDate(LocalDate.now())
+                .build();
+        userInfoRepository.save(userInfo);
+    }
+    private void closeCreditWallet(String username) throws NotEnoughMoneyToPayException, NoExistingUserException {
+        UserWallet userWallet = this.findByUsername(username);
+        userWallet.setCurrentCreditWallet(0);
+        userWalletRepository.save(userWallet);
     }
 
 }

@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
-import ua.bank.project.dto.UserInfoDTO;
-import ua.bank.project.entity.UserInfo;
 import ua.bank.project.entity.enums.Role;
 import ua.bank.project.entity.User;
 import ua.bank.project.repository.UserRepository;
@@ -24,8 +22,6 @@ public class UserService implements UserDetailsService {
 
 
     public void saveNewUser(User user) {
-        //TODO inform the user about the replay email
-        // TODO exception to endpoint
         try {
             userRepository.save(user);
         } catch (Exception ex) {

@@ -24,9 +24,12 @@
     </tr>
     <tr th:each="userInfo : ${userInfoDTO.userInfos}">
         <td th:if="${userInfo.type.name()}=='USER_SENDING'" th:text="#{type.user.pay}"></td>
+        <td th:if="${userInfo.type.name()}=='CREDIT_CLOSING'" th:text="#{type.credit.closing}"></td>
+        <td th:if="${userInfo.type.name()}=='MONEY_FROM_USER'" th:text="#{type.money.from.user}"></td>
         <td th:if="${userInfo.type.name()}=='BILL_PAYMENT'" th:text="#{type.bill.pay}"></td>
         <td th:if="${userInfo.type.name()}=='CREDIT_CONFIRMATION'" th:text="#{type.confirmed}"></td>
         <td th:if="${userInfo.type.name()}=='CREDIT_REJECTION'" th:text="#{type.rejected}"></td>
+        <td th:if="${userInfo.type.name()}=='CREDIT_OPENING'" th:text="#{type.credit.open}"></td>
         <td th:text="${userInfo.recipient}"></td>
         <td th:text="${userInfo.sentValue}"></td>
         <td th:text="${userInfo.transactionDate}"></td>

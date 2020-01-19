@@ -27,13 +27,11 @@ public class CreditRequestService {
     }
 
     public void makeCreditRequest(int amount, String username){
-        User user = userRepository.findByUsername(username).get();
         CreditRequests creditRequest = CreditRequests.builder()
                 .requestAmount(amount)
                 .requestDate(LocalDate.now())
                 .requestTime(LocalTime.now())
                 .creditRequestStatus(CreditRequestStatus.PROCESSING)
-                .user(user)
                 .userWallet(userWalletRepository.findByUser_Username(username).get())
                 .build();
         creditRequestRepository.save(creditRequest);

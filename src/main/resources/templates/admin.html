@@ -32,7 +32,7 @@
             <th th:text="#{string.admin.reject}"></th>
         </tr>
         <tr th:each="item : ${requestDTO.requests}">
-            <td th:text="${item.user.username}"></td >
+            <td th:text="${item.userWallet.user.username}"></td >
             <td th:text="${item.requestAmount}"></td>
             <td th:text="${item.requestDate}"></td>
             <td th:text="${item.requestTime}"></td>
@@ -42,6 +42,7 @@
             <td  th:if="${item.creditRequestStatus.name()}=='PROCESSING'">
                 <form th:action="@{/admin/confirmation}" method="post">
                     <input type="hidden" name="id" th:value="${item.id}">
+                    <input type="hidden" name="requestAmount" th:value="${item.requestAmount}">
                     <input type="submit" class="button"
                            style="color: green"
                            th:value="#{string.admin.confirm}">
@@ -50,6 +51,7 @@
             <td th:if="${item.creditRequestStatus.name()}=='PROCESSING'">
                 <form th:action="@{/admin/rejection}" method="post">
                     <input type="hidden" name="id" th:value="${item.id}">
+                    <input type="hidden" name="requestAmount" th:value="${item.requestAmount}">
                     <input type="submit" class="button"
                            style="color: red"
                            th:value="#{string.admin.reject}">

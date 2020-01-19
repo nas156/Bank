@@ -21,8 +21,8 @@ public class CreditRequests {
 
     private Integer requestAmount;
 
-    @OneToOne
-    private User user;
+//    @OneToOne
+//    private User user;
 
     @OneToOne
     UserWallet userWallet;

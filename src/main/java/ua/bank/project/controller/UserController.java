@@ -6,6 +6,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.bank.project.dto.WalletDTO;
+import ua.bank.project.entity.enums.TransactionType;
+import ua.bank.project.exception.BankTransactionException;
 import ua.bank.project.exception.NoExistingUserException;
 import ua.bank.project.exception.NotEnoughMoneyToPayException;
 import ua.bank.project.service.CreditRequestService;
@@ -30,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize( "hasAuthority('USER')" )
+    @PreAuthorize("hasAuthority('USER')")
     public String getMainPage(Principal principal, Model model) {
         WalletDTO walletDTO = walletService.getWalletByUsername(principal.getName());
         model.addAttribute("walletDTO", walletDTO);
@@ -38,26 +40,29 @@ public class UserController {
     }
 
     @RequestMapping(value = "/request")
-    public String openCreditWallet(@RequestParam int amount, Principal principal){
+    public String openCreditWallet(@RequestParam int amount, Principal principal) {
         creditRequestService.makeCreditRequest(amount, principal.getName());
+        payService.createCreditInfo(principal.getName(), TransactionType.CREDIT_OPENING, amount);
         return "redirect:/user";
     }
 
     @RequestMapping(value = "/paybill")
-    public String payBill(@RequestParam String code, @RequestParam int amount, Principal principal)  {
-        try{
+    public String payBill(@RequestParam String code, @RequestParam int amount, Principal principal) {
+        try {
             payService.payBill(code, amount, principal.getName());
-        }
-        catch (NotEnoughMoneyToPayException e){
+            payService.createUserInfo(code, principal.getName(), amount, TransactionType.BILL_PAYMENT);
+        } catch (NotEnoughMoneyToPayException | NoExistingUserException e) {
             return "redirect:/user?amount=notenough";
         }
         return "redirect:/user?payed=true";
     }
 
     @RequestMapping(value = "/sendmoney")
-    public String sendMoney(@RequestParam String recipientUsername, @RequestParam int amount, Principal principal){
+    public String sendMoney(@RequestParam String recipientUsername, @RequestParam int amount, Principal principal) {
         try {
             payService.sendMoneyToUser(recipientUsername, principal.getName(), amount);
+            payService.createUserInfo(recipientUsername, principal.getName(), amount, TransactionType.USER_SENDING);
+            payService.createUserInfo(principal.getName(), recipientUsername, amount, TransactionType.MONEY_FROM_USER);
         } catch (NotEnoughMoneyToPayException e) {
             return "redirect:/user?amount=notenough";
         } catch (NoExistingUserException e) {
@@ -68,9 +73,10 @@ public class UserController {
     }
 
     @RequestMapping(value = "/close-credit")
-    public String closeCredit(Principal principal){
+    public String closeCredit(Principal principal) {
         try {
             payService.closeCredit(principal.getName());
+            payService.createCreditInfo(principal.getName(), TransactionType.CREDIT_CLOSING, 0);
         } catch (NotEnoughMoneyToPayException e) {
             return "redirect:/user?amount=notenough";
         } catch (NoExistingUserException e) {
@@ -78,5 +84,4 @@ public class UserController {
         }
         return "redirect:/user";
     }
-
 }
