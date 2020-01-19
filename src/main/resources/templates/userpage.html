@@ -44,6 +44,7 @@
         <input class="button" type="submit" th:value="#{string.user.open.creditwallet}"/>
     </form>
     <form th:action="@{/user/close-credit}" method="post">
+        <input type="text" name="amount" th:placeholder="#{string.user.credit.close.amount}"/><br>
         <input class="button" type="submit" th:value="#{string.user.close.credit}"/>
     </form>
     <form th:action="@{/user/paybill}" method="post">

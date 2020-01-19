@@ -30,7 +30,7 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/confirmation")
-    public String confirmRequest(@RequestParam Long id, @RequestParam Integer requestAmount){
+    public String confirmRequest(@RequestParam Long id, @ModelAttribute(value = "requestAmount") Integer requestAmount){
         try{
             adminService.confirmCreditRequest(id);
             adminService.createCreditInfo(id, TransactionType.CREDIT_CONFIRMATION, requestAmount);
@@ -41,7 +41,7 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/rejection")
-    public String rejectRequest(@RequestParam Long id, @RequestParam Integer requestAmount){
+    public String rejectRequest(@RequestParam Long id, @ModelAttribute(value = "requestAmount") Integer requestAmount){
         try {
             adminService.rejectCreditRequest(id);
             adminService.createCreditInfo(id,
